@@ -1,10 +1,22 @@
 const originalOpen = XMLHttpRequest.prototype.open;
 const originalSend = XMLHttpRequest.prototype.send;
+const originalFetch = window.fetch || fetch;
 
 const listeners = new Set();
 
+window.fetch = interceptedFetch;
 XMLHttpRequest.prototype.open = interceptedOpen;
 XMLHttpRequest.prototype.send = interceptedSend;
+
+// url could be Request instance
+function interceptedFetch(url, options) {
+    for(let listener of listeners) {
+        // TODO: Apply listener, and based on response create response
+        // Or given a lack of response, call next listener
+    }
+
+    return originalFetch.call(this, url, options);
+};
 
 function interceptedOpen(...args) {
     const [method, url, async=true, username, password] = args;
